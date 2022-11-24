@@ -57,7 +57,7 @@ public class UserController {
         
         UserDetails userDetail = this.userService.loadUserByUsername(credentials.getUsername());
         String token = this.tokenProvider.generateToken(userDetail);
-        return ResponseEntity.ok(new TokenResponse(token));
+        return ResponseEntity.ok(new TokenResponse(token)); 
     }    
     
     @ApiOperation(value = "Get all users", authorizations = {@Authorization(value = "Bearer")})
