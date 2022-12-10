@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -30,17 +31,43 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Override
     public void configure(WebSecurity web) throws Exception {
+		web
+		.ignoring()
+		.antMatchers("/application/**")
+		.antMatchers("/css/**")
+		.antMatchers("/javascript-libs/noty/**")
+		.antMatchers("/react-libs/**")
+		.antMatchers("/webjars/**")
+		.antMatchers("/publics/**");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        
-        http.authorizeRequests()
-            .antMatchers(HttpMethod.GET,  "/swagger-ui.html").permitAll()
-            .antMatchers(HttpMethod.GET,  "/swagger-resources/**").permitAll()
-            .antMatchers(HttpMethod.GET,  "/v2/api-docs").permitAll()
-            .anyRequest().permitAll();
+    	 http.csrf().disable();
+         
+         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+         .and()
+         .addFilter(new JwtAuthorizationFilter(tokenProvider, authenticationManager()))
+         .authorizeRequests();
+         
+         http.authorizeRequests()
+         
+         	.antMatchers(HttpMethod.GET,  "/dashboard/**").permitAll()
+             .antMatchers(HttpMethod.GET,  "/swagger-ui.html").permitAll()
+             
+             .antMatchers(HttpMethod.GET,  "/api/users").hasAnyRole("USER", "ADMIN")
+             .antMatchers(HttpMethod.GET,  "/api/users").hasRole("ADMIN")
+             
+             
+             .antMatchers(HttpMethod.GET,  "/api/projects").hasAnyRole("USER", "ADMIN")
+             .antMatchers(HttpMethod.POST,  "/api/projects").hasRole("ADMIN")
+             .antMatchers(HttpMethod.GET,  "/api/projects/*").hasAnyRole("USER", "ADMIN")
+             .antMatchers(HttpMethod.DELETE,  "/api/projects/*").hasRole("ADMIN")
+             .antMatchers(HttpMethod.PUT,  "/api/projects/*").hasRole("ADMIN")
+             .antMatchers(HttpMethod.GET,  "/api/projects/*/tasks/**").hasAnyRole("USER", "ADMIN")
+            
+           
+             .anyRequest().denyAll();
     }
 
     @Bean
