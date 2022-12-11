@@ -33,7 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
 		web
 		.ignoring()
-		.antMatchers("/tasks-service/**")
+		.antMatchers("/application/**")
 		.antMatchers("/css/**")
 		.antMatchers("/javascript-libs/noty/**")
 		.antMatchers("/react-libs/**")
