@@ -33,12 +33,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
 		web
 		.ignoring()
-		.antMatchers("/application/**")
+		.antMatchers("/tasks-service/**")
 		.antMatchers("/css/**")
 		.antMatchers("/javascript-libs/noty/**")
 		.antMatchers("/react-libs/**")
-		.antMatchers("/webjars/**")
-		.antMatchers("/publics/**");
+		.antMatchers("/webjars/**");
+		
     }
 
     @Override
@@ -53,41 +53,36 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
          http.authorizeRequests()
          
          	.antMatchers(HttpMethod.GET,  "/dashboard/**").permitAll()
-             .antMatchers(HttpMethod.GET,  "/swagger-ui.html").permitAll()
+         	
+            .antMatchers(HttpMethod.GET,  "/swagger-ui.html").permitAll()
+            .antMatchers(HttpMethod.GET,  "/swagger-resources/**").permitAll()
+            .antMatchers(HttpMethod.GET,  "/v2/api-docs").permitAll()
              
+            .antMatchers(HttpMethod.POST,  "/api/login").permitAll()
+            .antMatchers(HttpMethod.GET,  "/api/users").hasRole("ADMIN")
             
-             .antMatchers(HttpMethod.POST,  "/api/login").permitAll()
-             .antMatchers(HttpMethod.GET,  "/api/users").hasRole("ADMIN")
+            .antMatchers(HttpMethod.GET,  "/api/tasks").permitAll()
+            .antMatchers(HttpMethod.GET,  "/api/tasks/{\\d+}").permitAll()
+            .antMatchers(HttpMethod.POST,  "/api/tasks").hasRole("ADMIN")
+            .antMatchers(HttpMethod.PUT,  "/api/tasks/{\\d+}").hasRole("ADMIN")
+            .antMatchers(HttpMethod.DELETE,  "/api/tasks/{\\d+}").hasRole("ADMIN")
+            .antMatchers(HttpMethod.GET, "/api/projects/{\\d+}/tasks").permitAll()
+             
+            .antMatchers(HttpMethod.GET,  "/api/projects").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/projects/{\\d+}").permitAll()
+            .antMatchers(HttpMethod.POST,  "/api/projects").hasRole("ADMIN")
+            .antMatchers(HttpMethod.PUT,  "/api/projects/{\\d+}").hasRole("ADMIN")
+            .antMatchers(HttpMethod.DELETE,  "/api/projects/{\\d+}").hasRole("ADMIN")
              
              
-             .antMatchers(HttpMethod.GET,  "/api/tasks").permitAll()
-             .antMatchers(HttpMethod.GET,  "/api/tasks/{\\d+}").permitAll()
-             .antMatchers(HttpMethod.POST,  "/api/tasks").hasRole("ADMIN")
-             .antMatchers(HttpMethod.PUT,  "/api/tasks/{\\d+}").hasRole("ADMIN")
-             .antMatchers(HttpMethod.DELETE,  "/api/tasks/{\\d+}").hasRole("ADMIN")
-             .antMatchers(HttpMethod.GET, "/api/projects/{\\d+}/tasks").permitAll()
-             
-             .antMatchers(HttpMethod.GET,  "/api/projects").permitAll()
-             .antMatchers(HttpMethod.GET, "/api/projects/{\\d+}").permitAll()
-             .antMatchers(HttpMethod.POST,  "/api/projects").hasRole("ADMIN")
-             .antMatchers(HttpMethod.PUT,  "/api/projects/{\\d+}").hasRole("ADMIN")
-             .antMatchers(HttpMethod.DELETE,  "/api/projects/{\\d+}").hasRole("ADMIN")
-             
-             
-             .antMatchers(HttpMethod.GET, "/api/comments/{\\d+}").permitAll()
-             .antMatchers(HttpMethod.POST, "/api/comments").authenticated()
-             
-             .antMatchers(HttpMethod.POST, "/api/tasks/{\\d+}/changeProgress").hasAnyRole("ADMIN", "USER")
-             .antMatchers(HttpMethod.POST, "/api/tasks/{\\d+}/changeResolution").hasRole("USER")
-             .antMatchers(HttpMethod.POST, "/api/tasks/{\\d+}/changeState").hasRole("ADMIN")
-             
+            .antMatchers(HttpMethod.GET, "/api/comments/{\\d+}").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/comments").authenticated()
+            
+            .antMatchers(HttpMethod.POST, "/api/tasks/{\\d+}/changeProgress").hasAnyRole("ADMIN", "USER")
+            .antMatchers(HttpMethod.POST, "/api/tasks/{\\d+}/changeResolution").hasRole("USER")
+            .antMatchers(HttpMethod.POST, "/api/tasks/{\\d+}/changeState").hasRole("ADMIN")
            
-            
-    
-             
-            
-           
-             .anyRequest().denyAll();
+            .anyRequest().denyAll();
     }
 
     @Bean
